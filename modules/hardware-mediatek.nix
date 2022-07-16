@@ -32,6 +32,11 @@ in
       default = false;
       description = "enable when SOC is Mediatek MT8183";
     };
+    hardware.socs.mediatek-mt6771.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is Mediatek MT6771";
+    };
   };
 
   config = mkMerge [
@@ -59,8 +64,15 @@ in
       };
     }
     {
-      mobile = mkIf cfg.mediatek-mt8183.enable {
+      mobile = mkIf cfg.mediatek-mt6771.enable {
         system.system = "aarch64-linux";
+        quirks.fb-refresher.enable = true;
+        kernel.structuredConfig = [
+          (helpers: with helpers; {
+            ARCH_MT6771 = lib.mkDefault yes;
+            ARCH_MEDIATEK = option yes;
+          })
+        ];
       };
     }
     (mkIf anyMediatek {
